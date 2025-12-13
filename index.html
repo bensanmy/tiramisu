@@ -150,6 +150,12 @@
             border: 1px solid #FFEAA7;
         }
 
+        .alert-danger {
+            background: #F8D7DA;
+            color: #721C24;
+            border: 1px solid #F5C6CB;
+        }
+
         .order-ref {
             font-size: 1.5em;
             font-weight: bold;
@@ -399,6 +405,7 @@
             </div>
 
             <div class="card">
+                <div id="loginError"></div>
                 <form onsubmit="adminLoginSubmit(event)">
                     <div class="form-group">
                         <label>Password</label>
@@ -484,8 +491,10 @@
     </div>
 
     <script>
-        // Initialize storage
-        async function initStorage() {
+        // Storage using localStorage as fallback
+        let storageData = null;
+
+        function initStorage() {
             const defaultData = {
                 orders: [],
                 settings: {
@@ -500,30 +509,38 @@
             };
 
             try {
-                const existing = await window.storage.get('tiramisu_data');
-                if (!existing) {
-                    await window.storage.set('tiramisu_data', JSON.stringify(defaultData));
+                const stored = localStorage.getItem('tiramisu_data');
+                if (stored) {
+                    storageData = JSON.parse(stored);
+                } else {
+                    storageData = defaultData;
+                    localStorage.setItem('tiramisu_data', JSON.stringify(defaultData));
                 }
             } catch (e) {
-                await window.storage.set('tiramisu_data', JSON.stringify(defaultData));
+                console.error('Storage error:', e);
+                storageData = defaultData;
             }
         }
 
-        async function getData() {
+        function getData() {
+            if (!storageData) {
+                initStorage();
+            }
+            return storageData;
+        }
+
+        function saveData(data) {
+            storageData = data;
             try {
-                const result = await window.storage.get('tiramisu_data');
-                return result ? JSON.parse(result.value) : null;
+                localStorage.setItem('tiramisu_data', JSON.stringify(data));
             } catch (e) {
-                return null;
+                console.error('Save error:', e);
             }
-        }
-
-        async function saveData(data) {
-            await window.storage.set('tiramisu_data', JSON.stringify(data));
         }
 
         // Initialize on load
-        initStorage().then(loadCustomerView);
+        initStorage();
+        loadCustomerView();
 
         // Navigation
         function showCustomerView() {
@@ -551,6 +568,7 @@
             document.getElementById('adminLogin').classList.remove('hidden');
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').innerHTML = '';
         }
 
         function showAdminSettings() {
@@ -570,8 +588,8 @@
         }
 
         // Customer Functions
-        async function loadCustomerView() {
-            const data = await getData();
+        function loadCustomerView() {
+            const data = getData();
             if (!data) return;
 
             const settings = data.settings;
@@ -590,7 +608,6 @@
             const cutoff = settings.cutoffDate ? new Date(settings.cutoffDate + 'T00:00:00') : null;
             
             const orderBtn = document.getElementById('orderBtn');
-            const orderForm = document.getElementById('orderForm');
             
             if (!settings.availDate || !settings.cutoffDate || !settings.price) {
                 orderBtn.disabled = true;
@@ -609,19 +626,18 @@
         }
 
         function updateTotal() {
-            getData().then(data => {
-                const qty = parseInt(document.getElementById('quantity').value) || 0;
-                const price = parseFloat(data.settings.price) || 0;
-                const total = qty * price;
-                document.getElementById('totalAmount').textContent = total > 0 ? 
-                    `Total: RM ${total.toFixed(2)}` : '';
-            });
+            const data = getData();
+            const qty = parseInt(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(data.settings.price) || 0;
+            const total = qty * price;
+            document.getElementById('totalAmount').textContent = total > 0 ? 
+                `Total: RM ${total.toFixed(2)}` : '';
         }
 
-        async function placeOrder(e) {
+        function placeOrder(e) {
             e.preventDefault();
             
-            const data = await getData();
+            const data = getData();
             const name = document.getElementById('customerName').value;
             const quantity = parseInt(document.getElementById('quantity').value);
             const price = parseFloat(data.settings.price);
@@ -642,7 +658,7 @@
             };
 
             data.orders.push(order);
-            await saveData(data);
+            saveData(data);
 
             // Show confirmation
             showOrderConfirmation(order, data.settings);
@@ -674,11 +690,11 @@
             updateTotal();
         }
 
-        async function checkOrderStatus(e) {
+        function checkOrderStatus(e) {
             e.preventDefault();
             
             const ref = document.getElementById('orderRefInput').value.trim().toUpperCase();
-            const data = await getData();
+            const data = getData();
             const order = data.orders.find(o => o.ref === ref);
 
             const resultDiv = document.getElementById('orderStatusResult');
@@ -706,23 +722,27 @@
         }
 
         // Admin Functions
-        async function adminLoginSubmit(e) {
+        function adminLoginSubmit(e) {
             e.preventDefault();
             
             const password = document.getElementById('adminPassword').value;
-            const data = await getData();
+            const data = getData();
+
+            console.log('Attempting login with password:', password);
+            console.log('Stored password:', data.settings.password);
 
             if (password === data.settings.password) {
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 showAdminSettings();
             } else {
-                alert('Incorrect password');
+                document.getElementById('loginError').innerHTML = 
+                    '<div class="alert alert-danger" style="margin-bottom: 16px;">Incorrect password. Default password is: admin123</div>';
             }
         }
 
-        async function loadAdminSettings() {
-            const data = await getData();
+        function loadAdminSettings() {
+            const data = getData();
             const settings = data.settings;
 
             document.getElementById('adminAvailDate').value = settings.availDate || '';
@@ -732,28 +752,28 @@
             document.getElementById('ewalletDetails').value = settings.ewalletDetails || '';
         }
 
-        async function saveSettings() {
-            const data = await getData();
+        function saveSettings() {
+            const data = getData();
             
             data.settings.availDate = document.getElementById('adminAvailDate').value;
             data.settings.cutoffDate = document.getElementById('adminCutoffDate').value;
             data.settings.price = document.getElementById('adminPrice').value;
 
-            await saveData(data);
+            saveData(data);
             alert('Settings saved successfully!');
         }
 
-        async function savePaymentDetails() {
-            const data = await getData();
+        function savePaymentDetails() {
+            const data = getData();
             
             data.settings.bankDetails = document.getElementById('bankDetails').value;
             data.settings.ewalletDetails = document.getElementById('ewalletDetails').value;
 
-            await saveData(data);
+            saveData(data);
             alert('Payment details saved successfully!');
         }
 
-        async function changePassword() {
+        function changePassword() {
             const newPass = document.getElementById('newPassword').value;
             
             if (!newPass) {
@@ -761,16 +781,16 @@
                 return;
             }
 
-            const data = await getData();
+            const data = getData();
             data.settings.password = newPass;
-            await saveData(data);
+            saveData(data);
             
             document.getElementById('newPassword').value = '';
             alert('Password updated successfully!');
         }
 
-        async function loadAdminOrders() {
-            const data = await getData();
+        function loadAdminOrders() {
+            const data = getData();
             const container = document.getElementById('ordersContainer');
 
             if (data.orders.length === 0) {
@@ -806,18 +826,18 @@
             container.innerHTML = html;
         }
 
-        async function togglePaid(ref) {
-            const data = await getData();
+        function togglePaid(ref) {
+            const data = getData();
             const order = data.orders.find(o => o.ref === ref);
             
             if (order) {
                 order.paid = !order.paid;
-                await saveData(data);
+                saveData(data);
                 loadAdminOrders();
             }
         }
 
-        async function resetSystem() {
+        function resetSystem() {
             if (!confirm('Are you sure you want to reset the system? This will DELETE ALL ORDERS permanently!')) {
                 return;
             }
@@ -826,12 +846,11 @@
                 return;
             }
 
-            const data = await getData();
+            const data = getData();
             data.orders = [];
             data.settings.orderCounter = 0;
-            // Keep other settings
             
-            await saveData(data);
+            saveData(data);
             alert('System reset successfully! All orders have been cleared.');
             loadAdminOrders();
         }
