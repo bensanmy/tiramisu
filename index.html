@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiramisu Preorders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #FFF5E6 0%, #FFE8CC 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #8B4513;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            background: #FFF8F0;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #D2691E;
+        }
+
+        .info-label {
+            font-size: 0.85em;
+            color: #8B4513;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #8B4513;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #FFE8CC;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #D2691E;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #D2691E 0%, #A0522D 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #CCC;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .alert-success {
+            background: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
+
+        .alert-info {
+            background: #D1ECF1;
+            color: #0C5460;
+            border: 1px solid #BEE5EB;
+        }
+
+        .alert-warning {
+            background: #FFF3CD;
+            color: #856404;
+            border: 1px solid #FFEAA7;
+        }
+
+        .order-ref {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #D2691E;
+            text-align: center;
+            padding: 16px;
+            background: #FFF8F0;
+            border-radius: 8px;
+            margin: 16px 0;
+            letter-spacing: 1px;
+        }
+
+        .payment-info {
+            background: #FFF8F0;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border: 2px solid #FFE8CC;
+        }
+
+        .payment-info h3 {
+            color: #8B4513;
+            margin-bottom: 12px;
+        }
+
+        .payment-details {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-family: monospace;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #D2691E;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .orders-table {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .order-card {
+            background: #FFF8F0;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #D2691E;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .status-paid {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .order-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .toggle-paid {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            width: auto;
+            margin-top: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .check-order-btn {
+            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
+            margin-top: 12px;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #888 0%, #666 100%);
+            margin-bottom: 12px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+            margin-top: 12px;
+        }
+
+        .admin-settings {
+            display: grid;
+            gap: 16px;
+        }
+
+        .settings-section {
+            background: #FFF8F0;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .settings-section h3 {
+            color: #8B4513;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #FFE8CC;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #D2691E;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Customer View -->
+        <div id="customerView">
+            <div class="header">
+                <h1>🍰 Tiramisu Preorders</h1>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" onclick="showCheckOrder(); return false;">Check My Order</a>
+                <a href="#" onclick="showAdminLogin(); return false;">Admin</a>
+            </div>
+
+            <div class="card" id="infoCard">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Available On</div>
+                        <div class="info-value" id="availDate">Not set</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Order Cutoff</div>
+                        <div class="info-value" id="cutoffDate">Not set</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Price</div>
+                        <div class="info-value" id="priceDisplay">Not set</div>
+                    </div>
+                </div>
+
+                <form id="orderForm" onsubmit="placeOrder(event)">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="quantity" min="1" required>
+                    </div>
+                    <div id="totalAmount" style="text-align: right; color: #8B4513; font-weight: 600; margin-bottom: 12px;"></div>
+                    <button type="submit" id="orderBtn">Place Order</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Confirmation -->
+        <div id="orderConfirmation" class="hidden">
+            <div class="header">
+                <h1>🍰 Order Confirmed!</h1>
+            </div>
+
+            <div class="card">
+                <div class="alert alert-success">
+                    Your order has been placed successfully!
+                </div>
+
+                <div class="order-ref" id="orderRefDisplay"></div>
+
+                <div class="payment-info" id="paymentInfo"></div>
+
+                <div class="alert alert-info">
+                    <strong>Next Steps:</strong><br>
+                    1. Transfer the amount to the details above<br>
+                    2. Include your order reference in the transfer notes<br>
+                    3. Check your order status anytime using the reference number
+                </div>
+
+                <button class="back-btn" onclick="showCustomerView()">Back to Home</button>
+                <button class="check-order-btn" onclick="showCheckOrder()">Check Order Status</button>
+            </div>
+        </div>
+
+        <!-- Check Order -->
+        <div id="checkOrderView" class="hidden">
+            <div class="header">
+                <h1>🍰 Check Order Status</h1>
+            </div>
+
+            <div class="card">
+                <form onsubmit="checkOrderStatus(event)">
+                    <div class="form-group">
+                        <label>Order Reference Number</label>
+                        <input type="text" id="orderRefInput" placeholder="e.g., TRM-001" required>
+                    </div>
+                    <button type="submit">Check Status</button>
+                </form>
+
+                <div id="orderStatusResult" style="margin-top: 20px;"></div>
+
+                <button class="back-btn" onclick="showCustomerView()" style="margin-top: 12px;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- Admin Login -->
+        <div id="adminLogin" class="hidden">
+            <div class="header">
+                <h1>🔐 Admin Login</h1>
+            </div>
+
+            <div class="card">
+                <form onsubmit="adminLoginSubmit(event)">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="adminPassword" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+
+                <button class="back-btn" onclick="showCustomerView()" style="margin-top: 12px;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden">
+            <div class="header">
+                <h1>⚙️ Admin Panel</h1>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" onclick="showAdminOrders(); return false;">Orders</a>
+                <a href="#" onclick="showAdminSettings(); return false;">Settings</a>
+                <a href="#" onclick="adminLogout(); return false;">Logout</a>
+            </div>
+
+            <!-- Admin Settings -->
+            <div id="adminSettingsView" class="card">
+                <h2 style="color: #8B4513; margin-bottom: 20px;">Settings</h2>
+
+                <div class="admin-settings">
+                    <div class="settings-section">
+                        <h3>Dates & Pricing</h3>
+                        <div class="form-group">
+                            <label>Availability Date</label>
+                            <input type="date" id="adminAvailDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Order Cutoff Date</label>
+                            <input type="date" id="adminCutoffDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (RM)</label>
+                            <input type="number" id="adminPrice" step="0.01" min="0">
+                        </div>
+                        <button onclick="saveSettings()">Save Settings</button>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Payment Details</h3>
+                        <div class="form-group">
+                            <label>Bank Account Details</label>
+                            <textarea id="bankDetails" placeholder="e.g., Maybank: 1234567890"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>E-Wallet Details</label>
+                            <textarea id="ewalletDetails" placeholder="e.g., Touch 'n Go: 012-3456789"></textarea>
+                        </div>
+                        <button onclick="savePaymentDetails()">Save Payment Details</button>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Change Password</h3>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword">
+                        </div>
+                        <button onclick="changePassword()">Update Password</button>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Danger Zone</h3>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">Reset the system for a new batch. This will delete all orders.</p>
+                        <button class="reset-btn" onclick="resetSystem()">Reset System</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Orders -->
+            <div id="adminOrdersView" class="card hidden">
+                <h2 style="color: #8B4513; margin-bottom: 20px;">Orders</h2>
+                <div id="ordersContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize storage
+        async function initStorage() {
+            const defaultData = {
+                orders: [],
+                settings: {
+                    availDate: '',
+                    cutoffDate: '',
+                    price: '',
+                    bankDetails: '',
+                    ewalletDetails: '',
+                    password: 'admin123',
+                    orderCounter: 0
+                }
+            };
+
+            try {
+                const existing = await window.storage.get('tiramisu_data');
+                if (!existing) {
+                    await window.storage.set('tiramisu_data', JSON.stringify(defaultData));
+                }
+            } catch (e) {
+                await window.storage.set('tiramisu_data', JSON.stringify(defaultData));
+            }
+        }
+
+        async function getData() {
+            try {
+                const result = await window.storage.get('tiramisu_data');
+                return result ? JSON.parse(result.value) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function saveData(data) {
+            await window.storage.set('tiramisu_data', JSON.stringify(data));
+        }
+
+        // Initialize on load
+        initStorage().then(loadCustomerView);
+
+        // Navigation
+        function showCustomerView() {
+            document.getElementById('customerView').classList.remove('hidden');
+            document.getElementById('orderConfirmation').classList.add('hidden');
+            document.getElementById('checkOrderView').classList.add('hidden');
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            loadCustomerView();
+        }
+
+        function showCheckOrder() {
+            document.getElementById('customerView').classList.add('hidden');
+            document.getElementById('orderConfirmation').classList.add('hidden');
+            document.getElementById('checkOrderView').classList.remove('hidden');
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('orderStatusResult').innerHTML = '';
+        }
+
+        function showAdminLogin() {
+            document.getElementById('customerView').classList.add('hidden');
+            document.getElementById('orderConfirmation').classList.add('hidden');
+            document.getElementById('checkOrderView').classList.add('hidden');
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function showAdminSettings() {
+            document.getElementById('adminSettingsView').classList.remove('hidden');
+            document.getElementById('adminOrdersView').classList.add('hidden');
+            loadAdminSettings();
+        }
+
+        function showAdminOrders() {
+            document.getElementById('adminSettingsView').classList.add('hidden');
+            document.getElementById('adminOrdersView').classList.remove('hidden');
+            loadAdminOrders();
+        }
+
+        function adminLogout() {
+            showCustomerView();
+        }
+
+        // Customer Functions
+        async function loadCustomerView() {
+            const data = await getData();
+            if (!data) return;
+
+            const settings = data.settings;
+            
+            // Display dates and price
+            document.getElementById('availDate').textContent = settings.availDate ? 
+                new Date(settings.availDate + 'T00:00:00').toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not set';
+            document.getElementById('cutoffDate').textContent = settings.cutoffDate ? 
+                new Date(settings.cutoffDate + 'T00:00:00').toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not set';
+            document.getElementById('priceDisplay').textContent = settings.price ? 
+                `RM ${parseFloat(settings.price).toFixed(2)}` : 'Not set';
+
+            // Check if ordering is allowed
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const cutoff = settings.cutoffDate ? new Date(settings.cutoffDate + 'T00:00:00') : null;
+            
+            const orderBtn = document.getElementById('orderBtn');
+            const orderForm = document.getElementById('orderForm');
+            
+            if (!settings.availDate || !settings.cutoffDate || !settings.price) {
+                orderBtn.disabled = true;
+                orderBtn.textContent = 'Orders Not Available Yet';
+            } else if (cutoff && now > cutoff) {
+                orderBtn.disabled = true;
+                orderBtn.textContent = 'Order Period Closed';
+            } else {
+                orderBtn.disabled = false;
+                orderBtn.textContent = 'Place Order';
+            }
+
+            // Update total on quantity change
+            document.getElementById('quantity').oninput = updateTotal;
+            updateTotal();
+        }
+
+        function updateTotal() {
+            getData().then(data => {
+                const qty = parseInt(document.getElementById('quantity').value) || 0;
+                const price = parseFloat(data.settings.price) || 0;
+                const total = qty * price;
+                document.getElementById('totalAmount').textContent = total > 0 ? 
+                    `Total: RM ${total.toFixed(2)}` : '';
+            });
+        }
+
+        async function placeOrder(e) {
+            e.preventDefault();
+            
+            const data = await getData();
+            const name = document.getElementById('customerName').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const price = parseFloat(data.settings.price);
+            const total = quantity * price;
+
+            // Generate order reference
+            data.settings.orderCounter++;
+            const orderRef = `TRM-${String(data.settings.orderCounter).padStart(3, '0')}`;
+
+            // Create order
+            const order = {
+                ref: orderRef,
+                name: name,
+                quantity: quantity,
+                total: total,
+                paid: false,
+                timestamp: new Date().toISOString()
+            };
+
+            data.orders.push(order);
+            await saveData(data);
+
+            // Show confirmation
+            showOrderConfirmation(order, data.settings);
+        }
+
+        function showOrderConfirmation(order, settings) {
+            document.getElementById('customerView').classList.add('hidden');
+            document.getElementById('orderConfirmation').classList.remove('hidden');
+
+            document.getElementById('orderRefDisplay').textContent = order.ref;
+
+            let paymentHTML = '<h3>Payment Details</h3>';
+            paymentHTML += `<p style="margin-bottom: 12px;"><strong>Amount to Pay: RM ${order.total.toFixed(2)}</strong></p>`;
+            
+            if (settings.bankDetails) {
+                paymentHTML += `<div class="payment-details"><strong>Bank Transfer:</strong><br>${settings.bankDetails.replace(/\n/g, '<br>')}</div>`;
+            }
+            if (settings.ewalletDetails) {
+                paymentHTML += `<div class="payment-details"><strong>E-Wallet:</strong><br>${settings.ewalletDetails.replace(/\n/g, '<br>')}</div>`;
+            }
+            
+            paymentHTML += `<p style="margin-top: 12px; font-size: 0.9em; color: #666;"><strong>Important:</strong> Please include "<strong>${order.ref}</strong>" in your transfer notes/reference.</p>`;
+
+            document.getElementById('paymentInfo').innerHTML = paymentHTML;
+
+            // Clear form
+            document.getElementById('customerName').value = '';
+            document.getElementById('quantity').value = '';
+            updateTotal();
+        }
+
+        async function checkOrderStatus(e) {
+            e.preventDefault();
+            
+            const ref = document.getElementById('orderRefInput').value.trim().toUpperCase();
+            const data = await getData();
+            const order = data.orders.find(o => o.ref === ref);
+
+            const resultDiv = document.getElementById('orderStatusResult');
+            
+            if (order) {
+                resultDiv.innerHTML = `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <strong>${order.ref}</strong>
+                            <span class="order-status ${order.paid ? 'status-paid' : 'status-pending'}">
+                                ${order.paid ? 'PAID' : 'PENDING'}
+                            </span>
+                        </div>
+                        <div class="order-details">
+                            <div><strong>Name:</strong> ${order.name}</div>
+                            <div><strong>Quantity:</strong> ${order.quantity}</div>
+                            <div><strong>Total:</strong> RM ${order.total.toFixed(2)}</div>
+                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en-MY')}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = '<div class="alert alert-warning">Order not found. Please check your reference number.</div>';
+            }
+        }
+
+        // Admin Functions
+        async function adminLoginSubmit(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('adminPassword').value;
+            const data = await getData();
+
+            if (password === data.settings.password) {
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                showAdminSettings();
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        async function loadAdminSettings() {
+            const data = await getData();
+            const settings = data.settings;
+
+            document.getElementById('adminAvailDate').value = settings.availDate || '';
+            document.getElementById('adminCutoffDate').value = settings.cutoffDate || '';
+            document.getElementById('adminPrice').value = settings.price || '';
+            document.getElementById('bankDetails').value = settings.bankDetails || '';
+            document.getElementById('ewalletDetails').value = settings.ewalletDetails || '';
+        }
+
+        async function saveSettings() {
+            const data = await getData();
+            
+            data.settings.availDate = document.getElementById('adminAvailDate').value;
+            data.settings.cutoffDate = document.getElementById('adminCutoffDate').value;
+            data.settings.price = document.getElementById('adminPrice').value;
+
+            await saveData(data);
+            alert('Settings saved successfully!');
+        }
+
+        async function savePaymentDetails() {
+            const data = await getData();
+            
+            data.settings.bankDetails = document.getElementById('bankDetails').value;
+            data.settings.ewalletDetails = document.getElementById('ewalletDetails').value;
+
+            await saveData(data);
+            alert('Payment details saved successfully!');
+        }
+
+        async function changePassword() {
+            const newPass = document.getElementById('newPassword').value;
+            
+            if (!newPass) {
+                alert('Please enter a new password');
+                return;
+            }
+
+            const data = await getData();
+            data.settings.password = newPass;
+            await saveData(data);
+            
+            document.getElementById('newPassword').value = '';
+            alert('Password updated successfully!');
+        }
+
+        async function loadAdminOrders() {
+            const data = await getData();
+            const container = document.getElementById('ordersContainer');
+
+            if (data.orders.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No orders yet.</div>';
+                return;
+            }
+
+            let html = '';
+            const sortedOrders = [...data.orders].reverse();
+
+            for (const order of sortedOrders) {
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <strong>${order.ref}</strong>
+                            <span class="order-status ${order.paid ? 'status-paid' : 'status-pending'}">
+                                ${order.paid ? 'PAID' : 'PENDING'}
+                            </span>
+                        </div>
+                        <div class="order-details">
+                            <div><strong>Name:</strong> ${order.name}</div>
+                            <div><strong>Quantity:</strong> ${order.quantity}</div>
+                            <div><strong>Total:</strong> RM ${order.total.toFixed(2)}</div>
+                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en-MY')}</div>
+                        </div>
+                        <button class="toggle-paid" onclick="togglePaid('${order.ref}')">
+                            Mark as ${order.paid ? 'Pending' : 'Paid'}
+                        </button>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        async function togglePaid(ref) {
+            const data = await getData();
+            const order = data.orders.find(o => o.ref === ref);
+            
+            if (order) {
+                order.paid = !order.paid;
+                await saveData(data);
+                loadAdminOrders();
+            }
+        }
+
+        async function resetSystem() {
+            if (!confirm('Are you sure you want to reset the system? This will DELETE ALL ORDERS permanently!')) {
+                return;
+            }
+
+            if (!confirm('This action cannot be undone. Are you absolutely sure?')) {
+                return;
+            }
+
+            const data = await getData();
+            data.orders = [];
+            data.settings.orderCounter = 0;
+            // Keep other settings
+            
+            await saveData(data);
+            alert('System reset successfully! All orders have been cleared.');
+            loadAdminOrders();
+        }
+    </script>
+</body>
+</html>
