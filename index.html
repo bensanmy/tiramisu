@@ -240,11 +240,6 @@
             font-size: 0.95em;
         }
 
-        .orders-table {
-            width: 100%;
-            margin-top: 16px;
-        }
-
         .order-card {
             background: #FFF8F0;
             padding: 16px;
@@ -354,12 +349,20 @@
             margin-top: 8px;
             border-radius: 8px;
         }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #8B4513;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="loading" id="loadingIndicator">Loading... 🍰</div>
+
         <!-- Customer View -->
-        <div id="customerView">
+        <div id="customerView" class="hidden">
             <div class="header">
                 <h1>🍰 Tiramisu Preorders</h1>
             </div>
@@ -499,7 +502,7 @@
                             <label>Price (RM)</label>
                             <input type="number" id="adminPrice" step="0.01" min="0">
                         </div>
-                        <button onclick="saveSettings()">Save Settings</button>
+                        <button onclick="saveSettingsFunc()">Save Settings</button>
                     </div>
 
                     <div class="settings-section">
@@ -514,7 +517,7 @@
                             <span class="file-input-label">Max 1MB. Leave empty if not needed.</span>
                             <img id="bankQRPreview" class="qr-preview hidden" alt="Bank QR Preview">
                         </div>
-                        <button onclick="savePaymentDetails()">Save Bank Details</button>
+                        <button onclick="savePaymentDetailsFunc()">Save Bank Details</button>
                     </div>
 
                     <div class="settings-section">
@@ -529,7 +532,7 @@
                             <span class="file-input-label">Max 1MB. Leave empty if not needed.</span>
                             <img id="ewalletQRPreview" class="qr-preview hidden" alt="E-Wallet QR Preview">
                         </div>
-                        <button onclick="savePaymentDetails()">Save E-Wallet Details</button>
+                        <button onclick="savePaymentDetailsFunc()">Save E-Wallet Details</button>
                     </div>
 
                     <div class="settings-section">
@@ -538,13 +541,13 @@
                             <label>New Password</label>
                             <input type="password" id="newPassword">
                         </div>
-                        <button onclick="changePassword()">Update Password</button>
+                        <button onclick="changePasswordFunc()">Update Password</button>
                     </div>
 
                     <div class="settings-section">
                         <h3>Danger Zone</h3>
                         <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">Reset the system for a new batch. This will delete all orders.</p>
-                        <button class="reset-btn" onclick="resetSystem()">Reset System</button>
+                        <button class="reset-btn" onclick="resetSystemFunc()">Reset System</button>
                     </div>
                 </div>
             </div>
@@ -557,16 +560,33 @@
         </div>
     </div>
 
-    <script>
-        // Storage using localStorage
-        let storageData = null;
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCNZTGNuy5PSB9SMBhKhaCCFpKicq-XsXo",
+            authDomain: "tiramisu-60e7d.firebaseapp.com",
+            projectId: "tiramisu-60e7d",
+            storageBucket: "tiramisu-60e7d.firebasestorage.app",
+            messagingSenderId: "434908714460",
+            appId: "1:434908714460:web:958628a5a86fd628daeb19"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         let tempBankQR = null;
         let tempEwalletQR = null;
 
-        function initStorage() {
-            const defaultData = {
-                orders: [],
-                settings: {
+        // Firebase helper functions
+        async function getSettings() {
+            const docRef = doc(db, 'tiramisu', 'settings');
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                return docSnap.data();
+            } else {
+                const defaultSettings = {
                     availDate: '',
                     cutoffDate: '',
                     price: '',
@@ -576,42 +596,42 @@
                     ewalletQR: '',
                     password: 'admin123',
                     orderCounter: 0
-                }
-            };
-
-            try {
-                const stored = localStorage.getItem('tiramisu_data');
-                if (stored) {
-                    storageData = JSON.parse(stored);
-                } else {
-                    storageData = defaultData;
-                    localStorage.setItem('tiramisu_data', JSON.stringify(defaultData));
-                }
-            } catch (e) {
-                console.error('Storage error:', e);
-                storageData = defaultData;
+                };
+                await setDoc(docRef, defaultSettings);
+                return defaultSettings;
             }
         }
 
-        function getData() {
-            if (!storageData) {
-                initStorage();
-            }
-            return storageData;
+        async function saveSettings(settings) {
+            const docRef = doc(db, 'tiramisu', 'settings');
+            await setDoc(docRef, settings);
         }
 
-        function saveData(data) {
-            storageData = data;
-            try {
-                localStorage.setItem('tiramisu_data', JSON.stringify(data));
-            } catch (e) {
-                console.error('Save error:', e);
-                alert('Error saving data. Storage might be full.');
-            }
+        async function getOrders() {
+            const ordersCol = collection(db, 'tiramisu', 'data', 'orders');
+            const orderSnapshot = await getDocs(ordersCol);
+            return orderSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        }
+
+        async function saveOrder(order) {
+            const docRef = doc(db, 'tiramisu', 'data', 'orders', order.ref);
+            await setDoc(docRef, order);
+        }
+
+        async function updateOrder(ref, updates) {
+            const docRef = doc(db, 'tiramisu', 'data', 'orders', ref);
+            await updateDoc(docRef, updates);
+        }
+
+        async function deleteAllOrders() {
+            const ordersCol = collection(db, 'tiramisu', 'data', 'orders');
+            const orderSnapshot = await getDocs(ordersCol);
+            const deletePromises = orderSnapshot.docs.map(doc => deleteDoc(doc.ref));
+            await Promise.all(deletePromises);
         }
 
         // QR Code handling
-        function handleQRUpload(event, type) {
+        window.handleQRUpload = function(event, type) {
             const file = event.target.files[0];
             if (!file) return;
 
@@ -637,8 +657,7 @@
             reader.readAsDataURL(file);
         }
 
-        // Copy to clipboard
-        function copyToClipboard(text, btnElement) {
+        window.copyToClipboard = function(text, btnElement) {
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = btnElement.textContent;
                 btnElement.textContent = 'Copied!';
@@ -650,8 +669,7 @@
             });
         }
 
-        // Download QR code
-        function downloadQR(base64Data, filename) {
+        window.downloadQR = function(base64Data, filename) {
             const link = document.createElement('a');
             link.href = base64Data;
             link.download = filename;
@@ -660,12 +678,8 @@
             document.body.removeChild(link);
         }
 
-        // Initialize on load
-        initStorage();
-        loadCustomerView();
-
         // Navigation
-        function showCustomerView() {
+        window.showCustomerView = function() {
             document.getElementById('customerView').classList.remove('hidden');
             document.getElementById('orderConfirmation').classList.add('hidden');
             document.getElementById('checkOrderView').classList.add('hidden');
@@ -674,7 +688,7 @@
             loadCustomerView();
         }
 
-        function showCheckOrder() {
+        window.showCheckOrder = function() {
             document.getElementById('customerView').classList.add('hidden');
             document.getElementById('orderConfirmation').classList.add('hidden');
             document.getElementById('checkOrderView').classList.remove('hidden');
@@ -683,7 +697,7 @@
             document.getElementById('orderStatusResult').innerHTML = '';
         }
 
-        function showAdminLogin() {
+        window.showAdminLogin = function() {
             document.getElementById('customerView').classList.add('hidden');
             document.getElementById('orderConfirmation').classList.add('hidden');
             document.getElementById('checkOrderView').classList.add('hidden');
@@ -693,28 +707,25 @@
             document.getElementById('loginError').innerHTML = '';
         }
 
-        function showAdminSettings() {
+        window.showAdminSettings = function() {
             document.getElementById('adminSettingsView').classList.remove('hidden');
             document.getElementById('adminOrdersView').classList.add('hidden');
             loadAdminSettings();
         }
 
-        function showAdminOrders() {
+        window.showAdminOrders = function() {
             document.getElementById('adminSettingsView').classList.add('hidden');
             document.getElementById('adminOrdersView').classList.remove('hidden');
             loadAdminOrders();
         }
 
-        function adminLogout() {
-            showCustomerView();
+        window.adminLogout = function() {
+            window.showCustomerView();
         }
 
         // Customer Functions
-        function loadCustomerView() {
-            const data = getData();
-            if (!data) return;
-
-            const settings = data.settings;
+        async function loadCustomerView() {
+            const settings = await getSettings();
             
             document.getElementById('availDate').textContent = settings.availDate ? 
                 new Date(settings.availDate + 'T00:00:00').toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not set';
@@ -740,30 +751,30 @@
                 orderBtn.textContent = 'Place Order';
             }
 
-            document.getElementById('quantity').oninput = updateTotal;
-            updateTotal();
+            document.getElementById('quantity').oninput = window.updateTotal;
+            window.updateTotal();
         }
 
-        function updateTotal() {
-            const data = getData();
+        window.updateTotal = async function() {
+            const settings = await getSettings();
             const qty = parseInt(document.getElementById('quantity').value) || 0;
-            const price = parseFloat(data.settings.price) || 0;
+            const price = parseFloat(settings.price) || 0;
             const total = qty * price;
             document.getElementById('totalAmount').textContent = total > 0 ? 
                 `Total: RM ${total.toFixed(2)}` : '';
         }
 
-        function placeOrder(e) {
+        window.placeOrder = async function(e) {
             e.preventDefault();
             
-            const data = getData();
+            const settings = await getSettings();
             const name = document.getElementById('customerName').value;
             const quantity = parseInt(document.getElementById('quantity').value);
-            const price = parseFloat(data.settings.price);
+            const price = parseFloat(settings.price);
             const total = quantity * price;
 
-            data.settings.orderCounter++;
-            const orderRef = `TIRA${String(data.settings.orderCounter).padStart(3, '0')}`;
+            settings.orderCounter++;
+            const orderRef = `TIRA${String(settings.orderCounter).padStart(3, '0')}`;
 
             const order = {
                 ref: orderRef,
@@ -774,10 +785,10 @@
                 timestamp: new Date().toISOString()
             };
 
-            data.orders.push(order);
-            saveData(data);
+            await saveOrder(order);
+            await saveSettings(settings);
 
-            showOrderConfirmation(order, data.settings);
+            showOrderConfirmation(order, settings);
         }
 
         function showOrderConfirmation(order, settings) {
@@ -794,9 +805,10 @@
                 paymentHTML += '<strong>Bank Transfer:</strong><br>';
                 
                 if (settings.bankDetails) {
+                    const escapedBank = settings.bankDetails.replace(/'/g, "\\'").replace(/\n/g, '\\n');
                     paymentHTML += `<div class="payment-text">
                         <div class="payment-text-content">${settings.bankDetails.replace(/\n/g, '<br>')}</div>
-                        <button class="copy-btn" onclick="copyToClipboard('${settings.bankDetails.replace(/'/g, "\\'")}', this); return false;">Copy</button>
+                        <button class="copy-btn" onclick="copyToClipboard('${escapedBank}', this); return false;">Copy</button>
                     </div>`;
                 }
                 
@@ -813,207 +825,12 @@
                 paymentHTML += '<strong>E-Wallet:</strong><br>';
                 
                 if (settings.ewalletDetails) {
+                    const escapedEwallet = settings.ewalletDetails.replace(/'/g, "\\'").replace(/\n/g, '\\n');
                     paymentHTML += `<div class="payment-text">
                         <div class="payment-text-content">${settings.ewalletDetails.replace(/\n/g, '<br>')}</div>
-                        <button class="copy-btn" onclick="copyToClipboard('${settings.ewalletDetails.replace(/'/g, "\\'")}', this); return false;">Copy</button>
+                        <button class="copy-btn" onclick="copyToClipboard('${escapedEwallet}', this); return false;">Copy</button>
                     </div>`;
                 }
                 
                 if (settings.ewalletQR) {
-                    paymentHTML += `<img src="${settings.ewalletQR}" class="qr-image" alt="E-Wallet QR Code">`;
-                    paymentHTML += `<button class="save-qr-btn" onclick="downloadQR('${settings.ewalletQR}', 'ewallet-qr-${order.ref}.png'); return false;">Save E-Wallet QR Code</button>`;
-                }
-                
-                paymentHTML += '</div>';
-            }
-            
-            paymentHTML += `<p style="margin-top: 12px; font-size: 0.9em; color: #666;"><strong>Important:</strong> Please include "<strong>${order.ref}</strong>" in your transfer notes/reference.</p>`;
-
-            document.getElementById('paymentInfo').innerHTML = paymentHTML;
-
-            document.getElementById('customerName').value = '';
-            document.getElementById('quantity').value = '';
-            updateTotal();
-        }
-
-        function checkOrderStatus(e) {
-            e.preventDefault();
-            
-            const ref = document.getElementById('orderRefInput').value.trim().toUpperCase();
-            const data = getData();
-            const order = data.orders.find(o => o.ref === ref);
-
-            const resultDiv = document.getElementById('orderStatusResult');
-            
-            if (order) {
-                resultDiv.innerHTML = `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <strong>${order.ref}</strong>
-                            <span class="order-status ${order.paid ? 'status-paid' : 'status-pending'}">
-                                ${order.paid ? 'PAID' : 'PENDING'}
-                            </span>
-                        </div>
-                        <div class="order-details">
-                            <div><strong>Name:</strong> ${order.name}</div>
-                            <div><strong>Quantity:</strong> ${order.quantity}</div>
-                            <div><strong>Total:</strong> RM ${order.total.toFixed(2)}</div>
-                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en-MY')}</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                resultDiv.innerHTML = '<div class="alert alert-warning">Order not found. Please check your reference number.</div>';
-            }
-        }
-
-        function adminLoginSubmit(e) {
-            e.preventDefault();
-            
-            const password = document.getElementById('adminPassword').value;
-            const data = getData();
-
-            if (password === data.settings.password) {
-                document.getElementById('adminLogin').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                showAdminSettings();
-            } else {
-                document.getElementById('loginError').innerHTML = 
-                    '<div class="alert alert-danger" style="margin-bottom: 16px;">Incorrect password. Default password is: admin123</div>';
-            }
-        }
-
-        function loadAdminSettings() {
-            const data = getData();
-            const settings = data.settings;
-
-            document.getElementById('adminAvailDate').value = settings.availDate || '';
-            document.getElementById('adminCutoffDate').value = settings.cutoffDate || '';
-            document.getElementById('adminPrice').value = settings.price || '';
-            document.getElementById('bankDetails').value = settings.bankDetails || '';
-            document.getElementById('ewalletDetails').value = settings.ewalletDetails || '';
-
-            if (settings.bankQR) {
-                document.getElementById('bankQRPreview').src = settings.bankQR;
-                document.getElementById('bankQRPreview').classList.remove('hidden');
-                tempBankQR = settings.bankQR;
-            }
-            if (settings.ewalletQR) {
-                document.getElementById('ewalletQRPreview').src = settings.ewalletQR;
-                document.getElementById('ewalletQRPreview').classList.remove('hidden');
-                tempEwalletQR = settings.ewalletQR;
-            }
-        }
-
-        function saveSettings() {
-            const data = getData();
-            
-            data.settings.availDate = document.getElementById('adminAvailDate').value;
-            data.settings.cutoffDate = document.getElementById('adminCutoffDate').value;
-            data.settings.price = document.getElementById('adminPrice').value;
-
-            saveData(data);
-            alert('Settings saved successfully!');
-        }
-
-        function savePaymentDetails() {
-            const data = getData();
-            
-            data.settings.bankDetails = document.getElementById('bankDetails').value;
-            data.settings.ewalletDetails = document.getElementById('ewalletDetails').value;
-            
-            if (tempBankQR) {
-                data.settings.bankQR = tempBankQR;
-            }
-            if (tempEwalletQR) {
-                data.settings.ewalletQR = tempEwalletQR;
-            }
-
-            saveData(data);
-            alert('Payment details saved successfully!');
-        }
-
-        function changePassword() {
-            const newPass = document.getElementById('newPassword').value;
-            
-            if (!newPass) {
-                alert('Please enter a new password');
-                return;
-            }
-
-            const data = getData();
-            data.settings.password = newPass;
-            saveData(data);
-            
-            document.getElementById('newPassword').value = '';
-            alert('Password updated successfully!');
-        }
-
-        function loadAdminOrders() {
-            const data = getData();
-            const container = document.getElementById('ordersContainer');
-
-            if (data.orders.length === 0) {
-                container.innerHTML = '<div class="alert alert-info">No orders yet.</div>';
-                return;
-            }
-
-            let html = '';
-            const sortedOrders = [...data.orders].reverse();
-
-            for (const order of sortedOrders) {
-                html += `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <strong>${order.ref}</strong>
-                            <span class="order-status ${order.paid ? 'status-paid' : 'status-pending'}">
-                                ${order.paid ? 'PAID' : 'PENDING'}
-                            </span>
-                        </div>
-                        <div class="order-details">
-                            <div><strong>Name:</strong> ${order.name}</div>
-                            <div><strong>Quantity:</strong> ${order.quantity}</div>
-                            <div><strong>Total:</strong> RM ${order.total.toFixed(2)}</div>
-                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en-MY')}</div>
-                        </div>
-                        <button class="toggle-paid" onclick="togglePaid('${order.ref}')">
-                            Mark as ${order.paid ? 'Pending' : 'Paid'}
-                        </button>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
-        }
-
-        function togglePaid(ref) {
-            const data = getData();
-            const order = data.orders.find(o => o.ref === ref);
-            
-            if (order) {
-                order.paid = !order.paid;
-                saveData(data);
-                loadAdminOrders();
-            }
-        }
-
-        function resetSystem() {
-            if (!confirm('Are you sure you want to reset the system? This will DELETE ALL ORDERS permanently!')) {
-                return;
-            }
-
-            if (!confirm('This action cannot be undone. Are you absolutely sure?')) {
-                return;
-            }
-
-            const data = getData();
-            data.orders = [];
-            data.settings.orderCounter = 0;
-            
-            saveData(data);
-            alert('System reset successfully! All orders have been cleared.');
-            loadAdminOrders();
-        }
-    </script>
-</body>
-</html>
+                    paymentHTML += `<img src="${settings.ewalletQR}" class="qr-image"
