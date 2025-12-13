@@ -858,4 +858,162 @@
                             <div><strong>Name:</strong> ${order.name}</div>
                             <div><strong>Quantity:</strong> ${order.quantity}</div>
                             <div><strong>Total:</strong> RM ${order.total.toFixed(2)}</div>
-                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en
+                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en-MY')}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = '<div class="alert alert-warning">Order not found. Please check your reference number.</div>';
+            }
+        }
+
+        function adminLoginSubmit(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('adminPassword').value;
+            const data = getData();
+
+            if (password === data.settings.password) {
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                showAdminSettings();
+            } else {
+                document.getElementById('loginError').innerHTML = 
+                    '<div class="alert alert-danger" style="margin-bottom: 16px;">Incorrect password. Default password is: admin123</div>';
+            }
+        }
+
+        function loadAdminSettings() {
+            const data = getData();
+            const settings = data.settings;
+
+            document.getElementById('adminAvailDate').value = settings.availDate || '';
+            document.getElementById('adminCutoffDate').value = settings.cutoffDate || '';
+            document.getElementById('adminPrice').value = settings.price || '';
+            document.getElementById('bankDetails').value = settings.bankDetails || '';
+            document.getElementById('ewalletDetails').value = settings.ewalletDetails || '';
+
+            if (settings.bankQR) {
+                document.getElementById('bankQRPreview').src = settings.bankQR;
+                document.getElementById('bankQRPreview').classList.remove('hidden');
+                tempBankQR = settings.bankQR;
+            }
+            if (settings.ewalletQR) {
+                document.getElementById('ewalletQRPreview').src = settings.ewalletQR;
+                document.getElementById('ewalletQRPreview').classList.remove('hidden');
+                tempEwalletQR = settings.ewalletQR;
+            }
+        }
+
+        function saveSettings() {
+            const data = getData();
+            
+            data.settings.availDate = document.getElementById('adminAvailDate').value;
+            data.settings.cutoffDate = document.getElementById('adminCutoffDate').value;
+            data.settings.price = document.getElementById('adminPrice').value;
+
+            saveData(data);
+            alert('Settings saved successfully!');
+        }
+
+        function savePaymentDetails() {
+            const data = getData();
+            
+            data.settings.bankDetails = document.getElementById('bankDetails').value;
+            data.settings.ewalletDetails = document.getElementById('ewalletDetails').value;
+            
+            if (tempBankQR) {
+                data.settings.bankQR = tempBankQR;
+            }
+            if (tempEwalletQR) {
+                data.settings.ewalletQR = tempEwalletQR;
+            }
+
+            saveData(data);
+            alert('Payment details saved successfully!');
+        }
+
+        function changePassword() {
+            const newPass = document.getElementById('newPassword').value;
+            
+            if (!newPass) {
+                alert('Please enter a new password');
+                return;
+            }
+
+            const data = getData();
+            data.settings.password = newPass;
+            saveData(data);
+            
+            document.getElementById('newPassword').value = '';
+            alert('Password updated successfully!');
+        }
+
+        function loadAdminOrders() {
+            const data = getData();
+            const container = document.getElementById('ordersContainer');
+
+            if (data.orders.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No orders yet.</div>';
+                return;
+            }
+
+            let html = '';
+            const sortedOrders = [...data.orders].reverse();
+
+            for (const order of sortedOrders) {
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <strong>${order.ref}</strong>
+                            <span class="order-status ${order.paid ? 'status-paid' : 'status-pending'}">
+                                ${order.paid ? 'PAID' : 'PENDING'}
+                            </span>
+                        </div>
+                        <div class="order-details">
+                            <div><strong>Name:</strong> ${order.name}</div>
+                            <div><strong>Quantity:</strong> ${order.quantity}</div>
+                            <div><strong>Total:</strong> RM ${order.total.toFixed(2)}</div>
+                            <div><strong>Ordered:</strong> ${new Date(order.timestamp).toLocaleString('en-MY')}</div>
+                        </div>
+                        <button class="toggle-paid" onclick="togglePaid('${order.ref}')">
+                            Mark as ${order.paid ? 'Pending' : 'Paid'}
+                        </button>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function togglePaid(ref) {
+            const data = getData();
+            const order = data.orders.find(o => o.ref === ref);
+            
+            if (order) {
+                order.paid = !order.paid;
+                saveData(data);
+                loadAdminOrders();
+            }
+        }
+
+        function resetSystem() {
+            if (!confirm('Are you sure you want to reset the system? This will DELETE ALL ORDERS permanently!')) {
+                return;
+            }
+
+            if (!confirm('This action cannot be undone. Are you absolutely sure?')) {
+                return;
+            }
+
+            const data = getData();
+            data.orders = [];
+            data.settings.orderCounter = 0;
+            
+            saveData(data);
+            alert('System reset successfully! All orders have been cleared.');
+            loadAdminOrders();
+        }
+    </script>
+</body>
+</html>
