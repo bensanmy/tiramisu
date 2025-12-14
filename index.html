@@ -5,545 +5,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tiramisu Preorders</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #FFF5E6 0%, #FFE8CC 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #8B4513;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .info-grid {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .info-item {
-            background: #FFF8F0;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 4px solid #D2691E;
-        }
-
-        .info-label {
-            font-size: 0.85em;
-            color: #8B4513;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .info-value {
-            font-size: 1.1em;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #8B4513;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="password"],
-        input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #FFE8CC;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #D2691E;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #D2691E 0%, #A0522D 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.05em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            background: #CCC;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-        }
-
-        .alert-success {
-            background: #D4EDDA;
-            color: #155724;
-            border: 1px solid #C3E6CB;
-        }
-
-        .alert-info {
-            background: #D1ECF1;
-            color: #0C5460;
-            border: 1px solid #BEE5EB;
-        }
-
-        .alert-warning {
-            background: #FFF3CD;
-            color: #856404;
-            border: 1px solid #FFEAA7;
-        }
-
-        .alert-danger {
-            background: #F8D7DA;
-            color: #721C24;
-            border: 1px solid #F5C6CB;
-        }
-
-        .order-ref {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #D2691E;
-            text-align: center;
-            padding: 16px;
-            background: #FFF8F0;
-            border-radius: 8px;
-            margin: 16px 0;
-            letter-spacing: 1px;
-        }
-
-        .payment-info {
-            background: #FFF8F0;
-            padding: 16px;
-            border-radius: 8px;
-            margin: 16px 0;
-            border: 2px solid #FFE8CC;
-        }
-
-        .payment-info h3 {
-            color: #8B4513;
-            margin-bottom: 12px;
-        }
-
-        .payment-details {
-            background: white;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 8px 0;
-        }
-
-        .payment-text {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .payment-text-content {
-            flex: 1;
-            font-family: monospace;
-            word-break: break-all;
-        }
-
-        .copy-btn {
-            padding: 8px 16px;
-            font-size: 0.85em;
-            width: auto;
-            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
-            white-space: nowrap;
-        }
-
-        .qr-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 12px 0;
-            display: block;
-        }
-
-        .save-qr-btn {
-            width: 100%;
-            padding: 10px;
-            font-size: 0.9em;
-            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
-            margin-top: 8px;
-        }
-
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .nav-links a {
-            color: #D2691E;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        .order-card {
-            background: #FFF8F0;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 4px solid #D2691E;
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .order-status {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        .status-pending {
-            background: #FFF3CD;
-            color: #856404;
-        }
-
-        .status-paid {
-            background: #D4EDDA;
-            color: #155724;
-        }
-
-        .order-details {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .toggle-paid {
-            padding: 8px 16px;
-            font-size: 0.9em;
-            width: auto;
-            margin-top: 8px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .check-order-btn {
-            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
-            margin-top: 12px;
-        }
-
-        .back-btn {
-            background: linear-gradient(135deg, #888 0%, #666 100%);
-            margin-bottom: 12px;
-        }
-
-        .reset-btn {
-            background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
-            margin-top: 12px;
-        }
-
-        .admin-settings {
-            display: grid;
-            gap: 16px;
-        }
-
-        .settings-section {
-            background: #FFF8F0;
-            padding: 16px;
-            border-radius: 8px;
-        }
-
-        .settings-section h3 {
-            color: #8B4513;
-            margin-bottom: 12px;
-            font-size: 1.1em;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #FFE8CC;
-            border-radius: 8px;
-            font-size: 0.95em;
-            font-family: inherit;
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #D2691E;
-        }
-
-        .file-input-label {
-            display: block;
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .qr-preview {
-            max-width: 200px;
-            margin-top: 8px;
-            border-radius: 8px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #8B4513;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #FFF5E6 0%, #FFE8CC 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #8B4513; font-size: 2em; margin-bottom: 10px; }
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1); margin-bottom: 20px; }
+        .info-grid { display: grid; gap: 12px; margin-bottom: 24px; }
+        .info-item { background: #FFF8F0; padding: 12px; border-radius: 8px; border-left: 4px solid #D2691E; }
+        .info-label { font-size: 0.85em; color: #8B4513; font-weight: 600; margin-bottom: 4px; }
+        .info-value { font-size: 1.1em; color: #333; font-weight: 500; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; color: #8B4513; font-weight: 600; margin-bottom: 8px; font-size: 0.95em; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="password"], input[type="file"] { width: 100%; padding: 12px; border: 2px solid #FFE8CC; border-radius: 8px; font-size: 1em; }
+        input:focus { outline: none; border-color: #D2691E; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #D2691E 0%, #A0522D 100%); color: white; border: none; border-radius: 8px; font-size: 1.05em; font-weight: 600; cursor: pointer; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3); }
+        button:disabled { background: #CCC; cursor: not-allowed; }
+        .alert { padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95em; }
+        .alert-success { background: #D4EDDA; color: #155724; border: 1px solid #C3E6CB; }
+        .alert-info { background: #D1ECF1; color: #0C5460; border: 1px solid #BEE5EB; }
+        .alert-warning { background: #FFF3CD; color: #856404; border: 1px solid #FFEAA7; }
+        .alert-danger { background: #F8D7DA; color: #721C24; border: 1px solid #F5C6CB; }
+        .order-ref { font-size: 1.5em; font-weight: bold; color: #D2691E; text-align: center; padding: 16px; background: #FFF8F0; border-radius: 8px; margin: 16px 0; letter-spacing: 1px; }
+        .payment-info { background: #FFF8F0; padding: 16px; border-radius: 8px; margin: 16px 0; border: 2px solid #FFE8CC; }
+        .payment-info h3 { color: #8B4513; margin-bottom: 12px; }
+        .payment-details { background: white; padding: 12px; border-radius: 6px; margin: 8px 0; }
+        .payment-text { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .payment-text-content { flex: 1; font-family: monospace; word-break: break-all; }
+        .copy-btn { padding: 8px 16px; font-size: 0.85em; width: auto; background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%); white-space: nowrap; }
+        .qr-image { max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0; display: block; }
+        .save-qr-btn { width: 100%; padding: 10px; font-size: 0.9em; background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%); margin-top: 8px; }
+        .nav-links { display: flex; justify-content: center; gap: 16px; margin-bottom: 20px; }
+        .nav-links a { color: #D2691E; text-decoration: none; font-weight: 600; font-size: 0.95em; }
+        .order-card { background: #FFF8F0; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #D2691E; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .order-status { padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600; }
+        .status-pending { background: #FFF3CD; color: #856404; }
+        .status-paid { background: #D4EDDA; color: #155724; }
+        .order-details { font-size: 0.9em; color: #666; margin-bottom: 8px; }
+        .toggle-paid { padding: 8px 16px; font-size: 0.9em; width: auto; margin-top: 8px; }
+        .hidden { display: none; }
+        .check-order-btn { background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%); margin-top: 12px; }
+        .back-btn { background: linear-gradient(135deg, #888 0%, #666 100%); margin-bottom: 12px; }
+        .reset-btn { background: linear-gradient(135deg, #DC3545 0%, #C82333 100%); margin-top: 12px; }
+        .admin-settings { display: grid; gap: 16px; }
+        .settings-section { background: #FFF8F0; padding: 16px; border-radius: 8px; }
+        .settings-section h3 { color: #8B4513; margin-bottom: 12px; font-size: 1.1em; }
+        textarea { width: 100%; padding: 12px; border: 2px solid #FFE8CC; border-radius: 8px; font-size: 0.95em; font-family: inherit; min-height: 80px; resize: vertical; }
+        textarea:focus { outline: none; border-color: #D2691E; }
+        .file-input-label { display: block; font-size: 0.85em; color: #666; margin-top: 4px; }
+        .qr-preview { max-width: 200px; margin-top: 8px; border-radius: 8px; }
+        .loading { text-align: center; padding: 20px; color: #8B4513; font-size: 1.2em; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="loading" id="loadingIndicator">Loading... 🍰</div>
-
-        <!-- Customer View -->
         <div id="customerView" class="hidden">
-            <div class="header">
-                <h1>🍰 Tiramisu Preorders</h1>
-            </div>
-
+            <div class="header"><h1>🍰 Tiramisu Preorders</h1></div>
             <div class="nav-links">
                 <a href="#" onclick="showCheckOrder(); return false;">Check My Order</a>
                 <a href="#" onclick="showAdminLogin(); return false;">Admin</a>
             </div>
-
-            <div class="card" id="infoCard">
+            <div class="card">
                 <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Available On</div>
-                        <div class="info-value" id="availDate">Not set</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Order Cutoff</div>
-                        <div class="info-value" id="cutoffDate">Not set</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Price</div>
-                        <div class="info-value" id="priceDisplay">Not set</div>
-                    </div>
+                    <div class="info-item"><div class="info-label">Available On</div><div class="info-value" id="availDate">Not set</div></div>
+                    <div class="info-item"><div class="info-label">Order Cutoff</div><div class="info-value" id="cutoffDate">Not set</div></div>
+                    <div class="info-item"><div class="info-label">Price</div><div class="info-value" id="priceDisplay">Not set</div></div>
                 </div>
-
-                <form id="orderForm" onsubmit="placeOrder(event)">
-                    <div class="form-group">
-                        <label>Your Name</label>
-                        <input type="text" id="customerName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="quantity" min="1" required>
-                    </div>
+                <form id="orderForm" onsubmit="placeOrder(event); return false;">
+                    <div class="form-group"><label>Your Name</label><input type="text" id="customerName" required></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="quantity" min="1" required></div>
                     <div id="totalAmount" style="text-align: right; color: #8B4513; font-weight: 600; margin-bottom: 12px;"></div>
                     <button type="submit" id="orderBtn">Place Order</button>
                 </form>
             </div>
         </div>
-
-        <!-- Order Confirmation -->
         <div id="orderConfirmation" class="hidden">
-            <div class="header">
-                <h1>🍰 Order Confirmed!</h1>
-            </div>
-
+            <div class="header"><h1>🍰 Order Confirmed!</h1></div>
             <div class="card">
-                <div class="alert alert-success">
-                    Your order has been placed successfully!
-                </div>
-
+                <div class="alert alert-success">Your order has been placed successfully!</div>
                 <div class="order-ref" id="orderRefDisplay"></div>
-
                 <div class="payment-info" id="paymentInfo"></div>
-
-                <div class="alert alert-info">
-                    <strong>Next Steps:</strong><br>
-                    1. Transfer the amount using QR code or account details above<br>
-                    2. Include your order reference in the transfer notes<br>
-                    3. Check your order status anytime using the reference number
-                </div>
-
+                <div class="alert alert-info"><strong>Next Steps:</strong><br>1. Transfer the amount using QR code or account details above<br>2. Include your order reference in the transfer notes<br>3. Check your order status anytime using the reference number</div>
                 <button class="back-btn" onclick="showCustomerView()">Back to Home</button>
                 <button class="check-order-btn" onclick="showCheckOrder()">Check Order Status</button>
             </div>
         </div>
-
-        <!-- Check Order -->
         <div id="checkOrderView" class="hidden">
-            <div class="header">
-                <h1>🍰 Check Order Status</h1>
-            </div>
-
+            <div class="header"><h1>🍰 Check Order Status</h1></div>
             <div class="card">
-                <form onsubmit="checkOrderStatus(event)">
-                    <div class="form-group">
-                        <label>Order Reference Number</label>
-                        <input type="text" id="orderRefInput" placeholder="e.g., TIRA001" required>
-                    </div>
+                <form onsubmit="checkOrderStatus(event); return false;">
+                    <div class="form-group"><label>Order Reference Number</label><input type="text" id="orderRefInput" placeholder="e.g., TIRA001" required></div>
                     <button type="submit">Check Status</button>
                 </form>
-
                 <div id="orderStatusResult" style="margin-top: 20px;"></div>
-
                 <button class="back-btn" onclick="showCustomerView()" style="margin-top: 12px;">Back to Home</button>
             </div>
         </div>
-
-        <!-- Admin Login -->
         <div id="adminLogin" class="hidden">
-            <div class="header">
-                <h1>🔐 Admin Login</h1>
-            </div>
-
+            <div class="header"><h1>🔐 Admin Login</h1></div>
             <div class="card">
                 <div id="loginError"></div>
-                <form onsubmit="adminLoginSubmit(event)">
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="adminPassword" required>
-                    </div>
+                <form onsubmit="adminLoginSubmit(event); return false;">
+                    <div class="form-group"><label>Password</label><input type="password" id="adminPassword" required></div>
                     <button type="submit">Login</button>
                 </form>
-
                 <button class="back-btn" onclick="showCustomerView()" style="margin-top: 12px;">Back to Home</button>
             </div>
         </div>
-
-        <!-- Admin Panel -->
         <div id="adminPanel" class="hidden">
-            <div class="header">
-                <h1>⚙️ Admin Panel</h1>
-            </div>
-
+            <div class="header"><h1>⚙️ Admin Panel</h1></div>
             <div class="nav-links">
                 <a href="#" onclick="showAdminOrders(); return false;">Orders</a>
                 <a href="#" onclick="showAdminSettings(); return false;">Settings</a>
                 <a href="#" onclick="adminLogout(); return false;">Logout</a>
             </div>
-
-            <!-- Admin Settings -->
             <div id="adminSettingsView" class="card">
                 <h2 style="color: #8B4513; margin-bottom: 20px;">Settings</h2>
-
                 <div class="admin-settings">
                     <div class="settings-section">
                         <h3>Dates & Pricing</h3>
-                        <div class="form-group">
-                            <label>Availability Date</label>
-                            <input type="date" id="adminAvailDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Order Cutoff Date</label>
-                            <input type="date" id="adminCutoffDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Price (RM)</label>
-                            <input type="number" id="adminPrice" step="0.01" min="0">
-                        </div>
+                        <div class="form-group"><label>Availability Date</label><input type="date" id="adminAvailDate"></div>
+                        <div class="form-group"><label>Order Cutoff Date</label><input type="date" id="adminCutoffDate"></div>
+                        <div class="form-group"><label>Price (RM)</label><input type="number" id="adminPrice" step="0.01" min="0"></div>
                         <button onclick="saveSettingsFunc()">Save Settings</button>
                     </div>
-
                     <div class="settings-section">
                         <h3>Bank Transfer Details</h3>
-                        <div class="form-group">
-                            <label>Bank Account Details (Text)</label>
-                            <textarea id="bankDetails" placeholder="e.g., Maybank: 1234567890&#10;Account Name: John Doe"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Bank QR Code</label>
-                            <input type="file" id="bankQR" accept="image/*" onchange="handleQRUpload(event, 'bank')">
-                            <span class="file-input-label">Max 1MB. Leave empty if not needed.</span>
-                            <img id="bankQRPreview" class="qr-preview hidden" alt="Bank QR Preview">
-                        </div>
+                        <div class="form-group"><label>Bank Account Details (Text)</label><textarea id="bankDetails" placeholder="e.g., Maybank: 1234567890&#10;Account Name: John Doe"></textarea></div>
+                        <div class="form-group"><label>Bank QR Code</label><input type="file" id="bankQR" accept="image/*"><span class="file-input-label">Max 1MB</span><img id="bankQRPreview" class="qr-preview hidden"></div>
                         <button onclick="savePaymentDetailsFunc()">Save Bank Details</button>
                     </div>
-
                     <div class="settings-section">
                         <h3>E-Wallet Details</h3>
-                        <div class="form-group">
-                            <label>E-Wallet Details (Text)</label>
-                            <textarea id="ewalletDetails" placeholder="e.g., Touch 'n Go: 012-3456789&#10;Account Name: John Doe"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>E-Wallet QR Code</label>
-                            <input type="file" id="ewalletQR" accept="image/*" onchange="handleQRUpload(event, 'ewallet')">
-                            <span class="file-input-label">Max 1MB. Leave empty if not needed.</span>
-                            <img id="ewalletQRPreview" class="qr-preview hidden" alt="E-Wallet QR Preview">
-                        </div>
+                        <div class="form-group"><label>E-Wallet Details (Text)</label><textarea id="ewalletDetails" placeholder="e.g., Touch 'n Go: 012-3456789&#10;Account Name: John Doe"></textarea></div>
+                        <div class="form-group"><label>E-Wallet QR Code</label><input type="file" id="ewalletQR" accept="image/*"><span class="file-input-label">Max 1MB</span><img id="ewalletQRPreview" class="qr-preview hidden"></div>
                         <button onclick="savePaymentDetailsFunc()">Save E-Wallet Details</button>
                     </div>
-
                     <div class="settings-section">
                         <h3>Change Password</h3>
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" id="newPassword">
-                        </div>
+                        <div class="form-group"><label>New Password</label><input type="password" id="newPassword"></div>
                         <button onclick="changePasswordFunc()">Update Password</button>
                     </div>
-
                     <div class="settings-section">
                         <h3>Danger Zone</h3>
                         <p style="color: #666; font-size: 0.9em; margin-bottom: 12px;">Reset the system for a new batch. This will delete all orders.</p>
@@ -551,288 +156,16 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Admin Orders -->
             <div id="adminOrdersView" class="card hidden">
                 <h2 style="color: #8B4513; margin-bottom: 20px;">Orders</h2>
                 <div id="ordersContainer"></div>
             </div>
         </div>
     </div>
-
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import{initializeApp as t}from"https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";import{getFirestore as e,doc as n,setDoc as a,getDoc as i,updateDoc as r,collection as o,getDocs as s,deleteDoc as c}from"https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";console.log("Starting...");const d=t({apiKey:"AIzaSyCNZTGNuy5PSB9SMBhKhaCCFpKicq-XsXo",authDomain:"tiramisu-60e7d.firebaseapp.com",projectId:"tiramisu-60e7d",storageBucket:"tiramisu-60e7d.firebasestorage.app",messagingSenderId:"434908714460",appId:"1:434908714460:web:958628a5a86fd628daeb19"}),l=e(d);console.log("Firebase ready!");let u=null,m=null;async function p(){try{const t=n(l,"tiramisu","settings"),e=await i(t);if(e.exists())return e.data();{const e={availDate:"",cutoffDate:"",price:"",bankDetails:"",ewalletDetails:"",bankQR:"",ewalletQR:"",password:"admin123",orderCounter:0};return await a(t,e),e}}catch(t){throw console.error("Settings error:",t),t}}async function g(t){await a(n(l,"tiramisu","settings"),t)}async function h(){const t=o(l,"tiramisu","data","orders");return(await s(t)).docs.map(t=>({id:t.id,...t.data()}))}async function y(t){await a(n(l,"tiramisu","data","orders",t.ref),t)}async function f(t,e){await r(n(l,"tiramisu","data","orders",t),e)}async function b(){const t=o(l,"tiramisu","data","orders"),e=await s(t);await Promise.all(e.docs.map(t=>c(t.ref)))}function D(t,e){const n=t.target.files[0];if(!n)return;if(n.size>1048576)return alert("File must be under 1MB"),void(t.target.value="");const a=new FileReader;a.onload=function(t){const n=t.target.result;"bank"===e?(u=n,document.getElementById("bankQRPreview").src=n,document.getElementById("bankQRPreview").classList.remove("hidden")):(m=n,document.getElementById("ewalletQRPreview").src=n,document.getElementById("ewalletQRPreview").classList.remove("hidden"))},a.readAsDataURL(n)}document.getElementById("bankQR").addEventListener("change",t=>D(t,"bank")),document.getElementById("ewalletQR").addEventListener("change",t=>D(t,"ewallet")),window.copyToClipboard=function(t,e){navigator.clipboard.writeText(t).then(()=>{const t=e.textContent;e.textContent="Copied!",setTimeout(()=>{e.textContent=t},2e3)}).catch(t=>{alert("Failed to copy")})},window.downloadQR=function(t,e){const n=document.createElement("a");n.href=t,n.download=e,document.body.appendChild(n),n.click(),document.body.removeChild(n)},window.showCustomerView=async function(){document.getElementById("customerView").classList.remove("hidden"),document.getElementById("orderConfirmation").classList.add("hidden"),document.getElementById("checkOrderView").classList.add("hidden"),document.getElementById("adminLogin").classList.add("hidden"),document.getElementById("adminPanel").classList.add("hidden"),await async function(){const t=await p();document.getElementById("availDate").textContent=t.availDate?new Date(t.availDate+"T00:00:00").toLocaleDateString("en-MY",{year:"numeric",month:"long",day:"numeric"}):"Not set",document.getElementById("cutoffDate").textContent=t.cutoffDate?new Date(t.cutoffDate+"T00:00:00").toLocaleDateString("en-MY",{year:"numeric",month:"long",day:"numeric"}):"Not set",document.getElementById("priceDisplay").textContent=t.price?`RM ${parseFloat(t.price).toFixed(2)}`:"Not set";const e=new Date;e.setHours(0,0,0,0);const n=t.cutoffDate?new Date(t.cutoffDate+"T00:00:00"):null,a=document.getElementById("orderBtn");t.availDate&&t.cutoffDate&&t.price?n&&e>n?(a.disabled=!0,a.textContent="Order Period Closed"):(a.disabled=!1,a.textContent="Place Order"):(a.disabled=!0,a.textContent="Orders Not Available Yet"),document.getElementById("quantity").oninput=window.updateTotal,window.updateTotal()}()},window.showCheckOrder=function(){document.getElementById("customerView").classList.add("hidden"),document.getElementById("orderConfirmation").classList.add("hidden"),document.getElementById("checkOrderView").classList.remove("hidden"),document.getElementById("adminLogin").classList.add("hidden"),document.getElementById("adminPanel").classList.add("hidden"),document.getElementById("orderStatusResult").innerHTML=""},window.showAdminLogin=function(){document.getElementById("customerView").classList.add("hidden"),document.getElementById("orderConfirmation").classList.add("hidden"),document.getElementById("checkOrderView").classList.add("hidden"),document.getElementById("adminLogin").classList.remove("hidden"),document.getElementById("adminPanel").classList.add("hidden"),document.getElementById("adminPassword").value="",document.getElementById("loginError").innerHTML=""},window.showAdminSettings=async function(){document.getElementById("adminSettingsView").classList.remove("hidden"),document.getElementById("adminOrdersView").classList.add("hidden"),await async function(){const t=await p();document.getElementById("adminAvailDate").value=t.availDate||"",document.getElementById("adminCutoffDate").value=t.cutoffDate||"",document.getElementById("adminPrice").value=t.price||"",document.getElementById("bankDetails").value=t.bankDetails||"",document.getElementById("ewalletDetails").value=t.ewalletDetails||"",t.bankQR&&(document.getElementById("bankQRPreview").src=t.bankQR,document.getElementById("bankQRPreview").classList.remove("hidden"),u=t.bankQR),t.ewalletQR&&(document.getElementById("ewalletQRPreview").src=t.ewalletQR,document.getElementById("ewalletQRPreview").classList.remove("hidden"),m=t.ewalletQR)}()},window.showAdminOrders=async function(){document.getElementById("adminSettingsView").classList.add("hidden"),document.getElementById("adminOrdersView").classList.remove("hidden"),await async function(){const t=await h(),e=document.getElementById("ordersContainer");if(0===t.length)return void(e.innerHTML='<div class="alert alert-info">No orders yet.</div>');let n="";[...t].sort((t,e)=>new Date(e.timestamp)-new Date(t.timestamp)).forEach(t=>{n+=`\n                    <div class="order-card">\n                        <div class="order-header">\n                            <strong>${t.ref}</strong>\n                            <span class="order-status ${t.paid?"status-paid":"status-pending"}">\n                                ${t.paid?"PAID":"PENDING"}\n                            </span>\n                        </div>\n                        <div class="order-details">\n                            <div><strong>Name:</strong> ${t.name}</div>\n                            <div><strong>Quantity:</strong> ${t.quantity}</div>\n                            <div><strong>Total:</strong> RM ${t.total.toFixed(2)}</div>\n                            <div><strong>Ordered:</strong> ${new Date(t.timestamp).toLocaleString("en-MY")}</div>\n                        </div>\n                        <button class="toggle-paid" onclick="togglePaid('${t.ref}')">\n                            Mark as ${t.paid?"Pending":"Paid"}\n                        </button>\n                    </div>\n                `}),e.innerHTML=n}()},window.adminLogout=function(){window.showCustomerView()},window.updateTotal=async function(){const t=await p(),e=parseInt(document.getElementById("quantity").value)||0,n=parseFloat(t.price)||0,a=e*n;document.getElementById("totalAmount").textContent=a>0?`Total: RM ${a.toFixed(2)}`:""
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCNZTGNuy5PSB9SMBhKhaCCFpKicq-XsXo",
-            authDomain: "tiramisu-60e7d.firebaseapp.com",
-            projectId: "tiramisu-60e7d",
-            storageBucket: "tiramisu-60e7d.firebasestorage.app",
-            messagingSenderId: "434908714460",
-            appId: "1:434908714460:web:958628a5a86fd628daeb19"
-        };
-
-        console.log('Initializing Firebase...');
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        console.log('Firebase initialized successfully!');
-
-        let tempBankQR = null;
-        let tempEwalletQR = null;
-
-        // Firebase helper functions
-        async function getSettings() {
-            const docRef = doc(db, 'tiramisu', 'settings');
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                return docSnap.data();
-            } else {
-                const defaultSettings = {
-                    availDate: '',
-                    cutoffDate: '',
-                    price: '',
-                    bankDetails: '',
-                    ewalletDetails: '',
-                    bankQR: '',
-                    ewalletQR: '',
-                    password: 'admin123',
-                    orderCounter: 0
-                };
-                await setDoc(docRef, defaultSettings);
-                return defaultSettings;
-            }
-        }
-
-        async function saveSettings(settings) {
-            const docRef = doc(db, 'tiramisu', 'settings');
-            await setDoc(docRef, settings);
-        }
-
-        async function getOrders() {
-            const ordersCol = collection(db, 'tiramisu', 'data', 'orders');
-            const orderSnapshot = await getDocs(ordersCol);
-            return orderSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        }
-
-        async function saveOrder(order) {
-            const docRef = doc(db, 'tiramisu', 'data', 'orders', order.ref);
-            await setDoc(docRef, order);
-        }
-
-        async function updateOrder(ref, updates) {
-            const docRef = doc(db, 'tiramisu', 'data', 'orders', ref);
-            await updateDoc(docRef, updates);
-        }
-
-        async function deleteAllOrders() {
-            const ordersCol = collection(db, 'tiramisu', 'data', 'orders');
-            const orderSnapshot = await getDocs(ordersCol);
-            const deletePromises = orderSnapshot.docs.map(doc => deleteDoc(doc.ref));
-            await Promise.all(deletePromises);
-        }
-
-        // QR Code handling
-        window.handleQRUpload = function(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (file.size > 1048576) {
-                alert('File size must be under 1MB. Please choose a smaller image.');
-                event.target.value = '';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64 = e.target.result;
-                if (type === 'bank') {
-                    tempBankQR = base64;
-                    document.getElementById('bankQRPreview').src = base64;
-                    document.getElementById('bankQRPreview').classList.remove('hidden');
-                } else {
-                    tempEwalletQR = base64;
-                    document.getElementById('ewalletQRPreview').src = base64;
-                    document.getElementById('ewalletQRPreview').classList.remove('hidden');
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        window.copyToClipboard = function(text, btnElement) {
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = btnElement.textContent;
-                btnElement.textContent = 'Copied!';
-                setTimeout(() => {
-                    btnElement.textContent = originalText;
-                }, 2000);
-            }).catch(err => {
-                alert('Failed to copy. Please copy manually.');
-            });
-        }
-
-        window.downloadQR = function(base64Data, filename) {
-            const link = document.createElement('a');
-            link.href = base64Data;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Navigation
-        window.showCustomerView = function() {
-            document.getElementById('customerView').classList.remove('hidden');
-            document.getElementById('orderConfirmation').classList.add('hidden');
-            document.getElementById('checkOrderView').classList.add('hidden');
-            document.getElementById('adminLogin').classList.add('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-            loadCustomerView();
-        }
-
-        window.showCheckOrder = function() {
-            document.getElementById('customerView').classList.add('hidden');
-            document.getElementById('orderConfirmation').classList.add('hidden');
-            document.getElementById('checkOrderView').classList.remove('hidden');
-            document.getElementById('adminLogin').classList.add('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('orderStatusResult').innerHTML = '';
-        }
-
-        window.showAdminLogin = function() {
-            document.getElementById('customerView').classList.add('hidden');
-            document.getElementById('orderConfirmation').classList.add('hidden');
-            document.getElementById('checkOrderView').classList.add('hidden');
-            document.getElementById('adminLogin').classList.remove('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('loginError').innerHTML = '';
-        }
-
-        window.showAdminSettings = function() {
-            document.getElementById('adminSettingsView').classList.remove('hidden');
-            document.getElementById('adminOrdersView').classList.add('hidden');
-            loadAdminSettings();
-        }
-
-        window.showAdminOrders = function() {
-            document.getElementById('adminSettingsView').classList.add('hidden');
-            document.getElementById('adminOrdersView').classList.remove('hidden');
-            loadAdminOrders();
-        }
-
-        window.adminLogout = function() {
-            window.showCustomerView();
-        }
-
-        // Customer Functions
-        async function loadCustomerView() {
-            const settings = await getSettings();
-            
-            document.getElementById('availDate').textContent = settings.availDate ? 
-                new Date(settings.availDate + 'T00:00:00').toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not set';
-            document.getElementById('cutoffDate').textContent = settings.cutoffDate ? 
-                new Date(settings.cutoffDate + 'T00:00:00').toLocaleDateString('en-MY', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not set';
-            document.getElementById('priceDisplay').textContent = settings.price ? 
-                `RM ${parseFloat(settings.price).toFixed(2)}` : 'Not set';
-
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-            const cutoff = settings.cutoffDate ? new Date(settings.cutoffDate + 'T00:00:00') : null;
-            
-            const orderBtn = document.getElementById('orderBtn');
-            
-            if (!settings.availDate || !settings.cutoffDate || !settings.price) {
-                orderBtn.disabled = true;
-                orderBtn.textContent = 'Orders Not Available Yet';
-            } else if (cutoff && now > cutoff) {
-                orderBtn.disabled = true;
-                orderBtn.textContent = 'Order Period Closed';
-            } else {
-                orderBtn.disabled = false;
-                orderBtn.textContent = 'Place Order';
-            }
-
-            document.getElementById('quantity').oninput = window.updateTotal;
-            window.updateTotal();
-        }
-
-        window.updateTotal = async function() {
-            const settings = await getSettings();
-            const qty = parseInt(document.getElementById('quantity').value) || 0;
-            const price = parseFloat(settings.price) || 0;
-            const total = qty * price;
-            document.getElementById('totalAmount').textContent = total > 0 ? 
-                `Total: RM ${total.toFixed(2)}` : '';
-        }
-
-        window.placeOrder = async function(e) {
-            e.preventDefault();
-            
-            const settings = await getSettings();
-            const name = document.getElementById('customerName').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const price = parseFloat(settings.price);
-            const total = quantity * price;
-
-            settings.orderCounter++;
-            const orderRef = `TIRA${String(settings.orderCounter).padStart(3, '0')}`;
-
-            const order = {
-                ref: orderRef,
-                name: name,
-                quantity: quantity,
-                total: total,
-                paid: false,
-                timestamp: new Date().toISOString()
-            };
-
-            await saveOrder(order);
-            await saveSettings(settings);
-
-            showOrderConfirmation(order, settings);
-        }
-
-        function showOrderConfirmation(order, settings) {
-            document.getElementById('customerView').classList.add('hidden');
-            document.getElementById('orderConfirmation').classList.remove('hidden');
-
-            document.getElementById('orderRefDisplay').textContent = order.ref;
-
-            let paymentHTML = '<h3>Payment Details</h3>';
-            paymentHTML += `<p style="margin-bottom: 12px;"><strong>Amount to Pay: RM ${order.total.toFixed(2)}</strong></p>`;
-            
-            if (settings.bankDetails || settings.bankQR) {
-                paymentHTML += '<div class="payment-details">';
-                paymentHTML += '<strong>Bank Transfer:</strong><br>';
-                
-                if (settings.bankDetails) {
-                    const escapedBank = settings.bankDetails.replace(/'/g, "\\'").replace(/\n/g, '\\n');
-                    paymentHTML += `<div class="payment-text">
-                        <div class="payment-text-content">${settings.bankDetails.replace(/\n/g, '<br>')}</div>
-                        <button class="copy-btn" onclick="copyToClipboard('${escapedBank}', this); return false;">Copy</button>
-                    </div>`;
-                }
-                
-                if (settings.bankQR) {
-                    paymentHTML += `<img src="${settings.bankQR}" class="qr-image" alt="Bank QR Code">`;
-                    paymentHTML += `<button class="save-qr-btn" onclick="downloadQR('${settings.bankQR}', 'bank-qr-${order.ref}.png'); return false;">Save Bank QR Code</button>`;
-                }
-                
-                paymentHTML += '</div>';
-            }
-            
-            if (settings.ewalletDetails || settings.ewalletQR) {
-                paymentHTML += '<div class="payment-details" style="margin-top: 12px;">';
-                paymentHTML += '<strong>E-Wallet:</strong><br>';
-                
-                if (settings.ewalletDetails) {
-                    const escapedEwallet = settings.ewalletDetails.replace(/'/g, "\\'").replace(/\n/g, '\\n');
-                    paymentHTML += `<div class="payment-text">
-                        <div class="payment-text-content">${settings.ewalletDetails.replace(/\n/g, '<br>')}</div>
-                        <button class="copy-btn" onclick="copyToClipboard('${escapedEwallet}', this); return false;">Copy</button>
-                    </div>`;
-                }
-                
-                if (settings.ewalletQR) {
-                    paymentHTML += `<img src="${settings.ewalletQR}" class="qr-image"
+},window.placeOrder=async function(t){t.preventDefault();const e=await p(),n=document.getElementById("customerName").value,a=parseInt(document.getElementById("quantity").value),i=parseFloat(e.price)*a;e.orderCounter++;const r=`TIRA${String(e.orderCounter).padStart(3,"0")}`,o={ref:r,name:n,quantity:a,total:i,paid:!1,timestamp:(new Date).toISOString()};await y(o),await g(e),function(t,e){document.getElementById("customerView").classList.add("hidden"),document.getElementById("orderConfirmation").classList.remove("hidden"),document.getElementById("orderRefDisplay").textContent=t.ref;let n=`<h3>Payment Details</h3><p style="margin-bottom: 12px;"><strong>Amount to Pay: RM ${t.total.toFixed(2)}</strong></p>`;if(e.bankDetails||e.bankQR){n+='<div class="payment-details"><strong>Bank Transfer:</strong><br>';const a=e.bankDetails.replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g,"\\n");e.bankDetails&&(n+=`<div class="payment-text"><div class="payment-text-content">${e.bankDetails.replace(/\n/g,"<br>")}</div><button class="copy-btn" onclick="copyToClipboard(\`${a}\`, this); return false;">Copy</button></div>`),e.bankQR&&(n+=`<img src="${e.bankQR}" class="qr-image"><button class="save-qr-btn" onclick="downloadQR('${e.bankQR}', 'bank-qr-${t.ref}.png'); return false;">Save Bank QR</button>`),n+="</div>"}if(e.ewalletDetails||e.ewalletQR){n+='<div class="payment-details" style="margin-top: 12px;"><strong>E-Wallet:</strong><br>';const a=e.ewalletDetails.replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g,"\\n");e.ewalletDetails&&(n+=`<div class="payment-text"><div class="payment-text-content">${e.ewalletDetails.replace(/\n/g,"<br>")}</div><button class="copy-btn" onclick="copyToClipboard(\`${a}\`, this); return false;">Copy</button></div>`),e.ewalletQR&&(n+=`<img src="${e.ewalletQR}" class="qr-image"><button class="save-qr-btn" onclick="downloadQR('${e.ewalletQR}', 'ewallet-qr-${t.ref}.png'); return false;">Save E-Wallet QR</button>`),n+="</div>"}n+=`<p style="margin-top: 12px; font-size: 0.9em; color: #666;"><strong>Important:</strong> Include "<strong>${t.ref}</strong>" in your transfer notes</p>`,document.getElementById("paymentInfo").innerHTML=n,document.getElementById("customerName").value="",document.getElementById("quantity").value="",window.updateTotal()}(o,e)},window.checkOrderStatus=async function(t){t.preventDefault();const e=document.getElementById("orderRefInput").value.trim().toUpperCase(),n=(await h()).find(t=>t.ref===e),a=document.getElementById("orderStatusResult");n?a.innerHTML=`\n            <div class="order-card">\n                <div class="order-header">\n                    <strong>${n.ref}</strong>\n                    <span class="order-status ${n.paid?"status-paid":"status-pending"}">\n                        ${n.paid?"PAID":"PENDING"}\n                    </span>\n                </div>\n                <div class="order-details">\n                    <div><strong>Name:</strong> ${n.name}</div>\n                    <div><strong>Quantity:</strong> ${n.quantity}</div>\n                    <div><strong>Total:</strong> RM ${n.total.toFixed(2)}</div>\n                    <div><strong>Ordered:</strong> ${new Date(n.timestamp).toLocaleString("en-MY")}</div>\n                </div>\n            </div>\n        `:a.innerHTML='<div class="alert alert-warning">Order not found</div>'},window.adminLoginSubmit=async function(t){t.preventDefault();const e=document.getElementById("adminPassword").value;(await p()).password===e?(document.getElementById("adminLogin").classList.add("hidden"),document.getElementById("adminPanel").classList.remove("hidden"),window.showAdminSettings()):document.getElementById("loginError").innerHTML='<div class="alert alert-danger" style="margin-bottom: 16px;">Incorrect password. Default: admin123</div>'},window.saveSettingsFunc=async function(){const t=await p();t.availDate=document.getElementById("adminAvailDate").value,t.cutoffDate=document.getElementById("adminCutoffDate").value,t.price=document.getElementById("adminPrice").value,await g(t),alert("Settings saved!")},window.savePaymentDetailsFunc=async function(){const t=await p();t.bankDetails=document.getElementById("bankDetails").value,t.ewalletDetails=document.getElementById("ewalletDetails").value,u&&(t.bankQR=u),m&&(t.ewalletQR=m),await g(t),alert("Payment details saved!")},window.changePasswordFunc=async function(){const t=document.getElementById("newPassword").value;if(!t)return void alert("Enter a new password");const e=await p();e.password=t,await g(e),document.getElementById("newPassword").value="",alert("Password updated!")},window.togglePaid=async function(t){const e=(await h()).find(e=>e.ref===t);e&&(await f(t,{paid:!e.paid}),window.showAdminOrders())},window.resetSystemFunc=async function(){if(!confirm("Delete ALL ORDERS permanently?"))return;if(!confirm("This cannot be undone. Are you sure?"))return;await b();const t=await p();t.orderCounter=0,await g(t),alert("System reset!"),window.showAdminOrders()};try{document.getElementById("loadingIndicator").classList.add("hidden"),window.showCustomerView()}catch(t){console.error("Init error:",t),document.getElementById("loadingIndicator").innerHTML="Error: "+t.message}
+    </script>
+</body>
+</html>
