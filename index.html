@@ -573,8 +573,10 @@
             appId: "1:434908714460:web:958628a5a86fd628daeb19"
         };
 
+        console.log('Initializing Firebase...');
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        console.log('Firebase initialized successfully!');
 
         let tempBankQR = null;
         let tempEwalletQR = null;
